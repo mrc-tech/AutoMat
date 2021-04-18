@@ -1,6 +1,7 @@
 /**********************************
 TODO:
-- mettere la possibilità di immettere il valore con std::cin
+- migliorare la gestione del segno negli operatori
+- fare il controllo delle cifre in ingresso
 
 
 
@@ -124,25 +125,24 @@ Bignum::Bignum(long int a)
 
 Bignum::Bignum(const std::string & str)
 {
-   std::string s = (str == "") ? "0" : str;
-
-   negativo = (s[0] == '-') ? true : false;        // check for negative sign
-   if(ispunct(s[0]))                    // if the first character
-     value = s.substr(1,s.length()-1);  // is a punctuation mark.
-   else value = s;
+	std::string s = (str == "") ? "0" : str;
+	
+	negativo = (s[0] == '-') ? true : false; //vede se il numero è negativo
+	
+	unsigned long start = s.find_first_not_of("0-");
+	if(start > s.length()){
+		s = "0"; //ha trovato solo zeri
+	}else{
+		s = s.substr(start,s.length()-start); //elimina eventuali zeri e segni iniziali
+	}
+	
+	value = s;
+	
+//	if(ispunct(s[0]))                    // if the first character
+//		value = s.substr(1,s.length()-1);  // is a punctuation mark. (NON è DETTO! potrebbe essere '+')
+//	else value = s;
 }
-//Bignum::Bignum(const std::string &s)
-//{ VERSIONE MIGLIORE: MA NON FUNZIONA AL 100%!!!!!!!!!!!!!
-//	unsigned long start = s.find_first_not_of("0-");
-//	
-//	if(!std::strcmp(&s[start],"")){
-//		std::strcpy(&value[0], "0");
-//	}
-//	
-//	if(s[0] == '-') negativo = true;
-//	
-//	value = &s[start];
-//}
+
 
 
 
@@ -172,8 +172,37 @@ const Bignum & Bignum::operator = (const Bignum &rhs)
 bool operator == (const Bignum & x,const Bignum & y)
 { return ((x.negativo == y.negativo) && (x.value == y.value)); }
 
+
 bool operator != (const Bignum & x,const Bignum & y)  
 { return !(x == y); }
+
+
+bool operator < (const Bignum & x,const Bignum & y)
+{
+	//controlla i segni relativi
+	if     (x.negativo < y.negativo) return false;
+	else if(x.negativo > y.negativo) return true;
+	// exclusive or (^) to determine sign
+	if     (x.value.length() < y.value.length()) return (1^x.negativo);
+	else if(x.value.length() > y.value.length()) return (0^x.negativo);
+	return (x.value < y.value && !x.negativo) || (x.value > y.value && x.negativo);
+}
+
+
+bool operator <= (const Bignum & x,const Bignum & y)
+{ return (x<y || x==y); }
+
+
+bool operator > (const Bignum & x,const Bignum & y)
+{ return (!(x<y) && x!=y); }
+
+
+bool operator >= (const Bignum & x,const Bignum & y)
+{ return (x>y || x==y); }
+
+
+
+
 
 
 // Unary - operator
@@ -202,8 +231,8 @@ Bignum operator + (const Bignum & x, const Bignum & y)
 	
 	if(x.negativo ^ y.negativo){ // ^ = XOR (bitwise)
 		//se c'è un solo segno negativo fa la sottrazione
-		if(x.negativo == false) return x-abs(y); //x è positivo, y è negativo
-		else                    return y-abs(x); //x è negativo, y è positivo
+		if(x.negativo) return y-abs(x); //x è negativo, y è positivo
+		else           return x-abs(y); //x è positivo, y è negativo
 	}
 	
 	i = x.value.rbegin();
@@ -229,37 +258,43 @@ Bignum operator - (const Bignum & x, const Bignum & y)
 	char d1, d2; //cifre dei due numeri da sottrarre
 	char digitsub; //valore temporanea delle cifre
 	char borrow = 0; //quanto prendo dalla cifra superiore
+	bool is_negative;
 	std::string::const_reverse_iterator i, j; //iteratori delle stringhe (contrario perchè la cifra meno significativa è l'ultimo elemento delal stringa, quindi deve cominciare dalla fine)
 	std::string temp = ""; //variabile di appoggio per calcolare il risultato
 	
 	if(x.negativo ^ y.negativo){ // ^ = XOR (bitwise)
 		//se c'è un solo segno negativo fa l'addizione
-		if(x.negativo == false) return x+abs(y); //è negativo il secondo termine
-		else                    return y+abs(x); //è negativo il primo termine
+		if(x.negativo) return -(y+abs(x)); //è negativo il primo termine
+		else           return   x+abs(y);  //è negativo il secondo termine
 	}
 	
 
 // AGGIUSTARE I SEGNI PER I CASI NEGATIVI!!! (magari senza utilizzare troppe risorse)	
-//Verylong w, y;
-//if(u.vlsign == 0)  // both u,v are positive
-// if(u<v) { w=v; y=u; negative=1;}
-// else    { w=u; y=v; negative=0;}
-//else               // both u,v are negative
-// if(u<v) { w=u; y=v; negative=1;}
-// else    { w=v; y=u; negative=0;}
+	Bignum u, v;
+	if(x.negativo) // both u,v are negative
+		if(x<y) { u=x; v=y; is_negative=true;}
+		else    { u=y; v=x; is_negative=false;}
+	else           // both u,v are positive
+		if(x<y) { u=y; v=x; is_negative=true;}
+		else    { u=x; v=y; is_negative=false;}
+//	//controlla se il risultato è positivo o negativo (il calcolo lo fa in modo tale che il risultato è sempre positivo)
+//	Bignum u=x,v=y; //variabili temporanee CERCARE DI ELIMINARE QUESTO USO ECCESSIVO DI RISORSE!!!!!!!!!!!!
+//	if(!x.negativo && x<y){ u=y; v=x; is_negative = true;  } else is_negative = false; //x e y sono entrambi positivi: x è più grande di y
+//	if( x.negativo && x>y){ u=y; v=x; is_negative = false; } else is_negative = true;  //x e y sono entrambi negativi: y è più negativo di x
+//	//NON FUNZIONA QUESTA SECONDA VERSIONE....
 	
-	i = x.value.rbegin();
-	j = y.value.rbegin();
-	while(i!=x.value.rend() || j!=y.value.rend()){
-		d1 = (i == x.value.rend()) ? 0 : *(i++) - '0'; // get digit
-		d2 = (j == y.value.rend()) ? 0 : *(j++) - '0'; // get digit
+	i = u.value.rbegin();
+	j = v.value.rbegin();
+	while(i!=u.value.rend() || j!=v.value.rend()){
+		d1 = (i == u.value.rend()) ? 0 : *(i++) - '0'; // get digit
+		d2 = (j == v.value.rend()) ? 0 : *(j++) - '0'; // get digit
 		digitsub = d1 - d2 - borrow; //sottrae le cifre
 		borrow = (digitsub < 0) ? 1 : 0; //imposta il prestito, se cè
 		digitsub += 10*borrow; //se c'è il prestito ovviamente lo aggiunge dalla cifra
 		temp = char(digitsub+'0') + temp; //aggiunge la cifra trovata a temp
 	}
 	while(temp[0] == '0') temp = temp.substr(1); //elimina eventuali zeri iniziali
-
+	if(is_negative) temp = '-' + temp; //se è negativo il risultato aggiunge il meno
 	
 	return Bignum(temp);
 }
@@ -282,6 +317,16 @@ Bignum operator * (const Bignum & x, const Bignum & y)
 	
 	return tempsum;
 }
+
+
+// modulo
+//Bignum operator % (const Bignum & x,const Bignum & y)
+//{ return (x - y*(x/y)); } RICHIEDE LA DIVISIONE!!!!!!!!!!!!!!!!
+
+
+
+
+
 
 
 
@@ -345,6 +390,16 @@ Bignum abs(const Bignum & x)
 	if(res.negativo) res.setNegative(false); //ha accesso perché è una funzione "friend"
 	return res;
 }
+
+
+// scambia due Bignum
+void swap(Bignum & x, Bignum & y)
+{
+	Bignum temp = x;
+	x = y;
+	y = temp;
+}
+
 
 
 

@@ -1,0 +1,6 @@
+VERSIONE: 0.0.1
+
+17/04/2021:
+- creazione del progetto GitHub
+- miglioramento costruttore a stringa
+- implementato il calcolo della sottrazione con i giusti segni (da migliorare)

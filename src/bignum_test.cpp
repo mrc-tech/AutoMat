@@ -22,13 +22,26 @@ int main()
 	cout << "2*y   = " << 2 * y      << " parsec" << endl;
 	cout << "y*z   = " << y * z      << " parsec^2" << endl;
 	
-	
+	cout << endl;
 	cout << "x   = ";
 	cin >> x;
 	cout << "2*x = " << x + x << endl;
 	cout << "x^2 = " << x * x << endl;
+	
+	cout << endl << endl;
+	cout << "x   = ";
+	cin >> x;
+	cout << "y   = ";
+	cin >> y;
+	cout << "x+y = " << x+y << endl;
+	cout << "x-y = " << x-y << endl;
+	cout << "y-x = " << y-x << endl;
+	cout << "x<y = " << ((x<y)?"vero":"falso") << endl;
+	cout << "x>y = " << ((x>y)?"vero":"falso") << endl;
+
 
 	system("pause");
+	
 
 	// calcola Fibonacci:	
 //	Bignum temp;
