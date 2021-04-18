@@ -1,3 +1,5 @@
 - fare in modo che controlla se è stata inserita una stringa di soli numeri oppure ci sono dei caratteri strani nella definizione dei Bignum. Ad esempio con cin si possono fare bei casini...
 
+- AutoMat_sh: shell per calcolare espressioni di matematica.
+
 - 
