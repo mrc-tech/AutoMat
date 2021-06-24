@@ -38,6 +38,8 @@ int main()
 	cout << "y-x = " << y-x << endl;
 	cout << "x<y = " << ((x<y)?"vero":"falso") << endl;
 	cout << "x>y = " << ((x>y)?"vero":"falso") << endl;
+	cout << "x/y = " << x/y << endl;
+	cout << "x%y = " << x%y << endl;
 
 
 	system("pause");

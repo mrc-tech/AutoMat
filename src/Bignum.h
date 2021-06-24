@@ -2,6 +2,7 @@
 TODO:
 - migliorare la gestione del segno negli operatori
 - fare il controllo delle cifre in ingresso
+- inserire le funzioni ausiliarie (sqrt, pow, etc.)
 
 
 
@@ -89,9 +90,9 @@ private:
 
 const Bignum Bignum::zero = Bignum(0);
 
-const Bignum Bignum::one = Bignum(1);
+const Bignum Bignum::one  = Bignum(1);
 
-const Bignum Bignum::two = Bignum(2);
+const Bignum Bignum::two  = Bignum(2);
 
 
 
@@ -319,9 +320,65 @@ Bignum operator * (const Bignum & x, const Bignum & y)
 }
 
 
+// divisione
+Bignum operator / (const Bignum & x, const Bignum & y)
+{
+	int len = x.value.length() - y.value.length();
+	std::string temp;
+	Bignum u,v,b,c,d,quotient=Bignum::zero;
+	
+	if(y == Bignum::zero) {
+		std::cout << "Error : division by zero" << std::endl;
+		return Bignum::zero;
+	}
+	
+	u = abs(x); v = abs(y);
+	if(u < v) return Bignum::zero;
+	c = Bignum(u.value.substr(0,u.value.length()-len));
+	
+	for(int i=0;i<=len;i++){
+		quotient = quotient.mult10(1);
+		b = d = Bignum::zero; // initialize b and d to 0
+		while(b < c) { b = b + v; d = d + Bignum::one; }
+		if(c < b){// if b>c, then
+			// we have added one count too many 
+			b = b - v; 
+			d = d - Bignum::one;
+		}
+		quotient = quotient + d;        // add to the quotient
+		if(i < len){
+			// partial remainder * 10 and add to next digit
+			c = (c-b).mult10(1);
+			c += Bignum(u.value[u.value.length()-len+i]-'0');
+		}
+	}
+	quotient.negativo = x.negativo ^ y.negativo;  // to determine sign
+	return quotient;
+}
+
+
 // modulo
-//Bignum operator % (const Bignum & x,const Bignum & y)
-//{ return (x - y*(x/y)); } RICHIEDE LA DIVISIONE!!!!!!!!!!!!!!!!
+Bignum operator % (const Bignum & x, const Bignum & y)
+{
+	return (x - y*(x/y));
+}
+
+
+
+Bignum Bignum::operator += (const Bignum &x)
+{  return *this = *this + x; }
+
+Bignum Bignum::operator -= (const Bignum &x)
+{  return *this = *this - x; }
+
+Bignum Bignum::operator *= (const Bignum &x)
+{  return *this = *this * x; }
+
+Bignum Bignum::operator /= (const Bignum &x)
+{  return *this = *this / x; }
+
+Bignum Bignum::operator %= (const Bignum &x)
+{  return *this = *this % x; }
 
 
 
