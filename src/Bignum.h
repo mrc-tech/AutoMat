@@ -520,3 +520,124 @@ std::istream & operator >> (std::istream & s, Bignum & v)
 //BigInt lcm(BigInt a, BigInt b) {
 //    return (a*b/gcd(a,b));
 //}
+//
+//// Calculate the integer square root of a number
+//// based on the formula (a+b)^2 = a^2 + 2ab + b^2
+//Verylong sqrt(const Verylong &v)
+//{
+//   // if v is negative, error is reported
+//   if(v.vlsign) {cerr << "NaN" << endl; return Verylong::zero; }
+//
+//   int j, k = v.vlstr.length()+1, num = k >> 1;
+//   Verylong y, z, sum, tempsum, digitsum;
+//   string temp, w(v.vlstr);
+//
+//   k = 0;
+//   j = 1;
+//
+//   // segment the number 2 digits by 2 digits
+//   if(v.vlstr.length() % 2) digitsum = Verylong(w[k++] - '0');
+//   else            
+//   { 
+//     digitsum = Verylong((w[k] - '0')*10 + w[k+1] - '0'); 
+//     k += 2;
+//   }
+//
+//   // find the first digit of the integer square root
+//   sum = z = Verylong(int(sqrt(double(digitsum))));
+//   // store partial result
+//   temp = char(int(z) + '0');
+//   digitsum = digitsum - z*z;
+//
+//   for(;j<num;j++)
+//   {
+//     // get next digit from the number
+//     digitsum = digitsum.mult10(1) + Verylong(w[k++] - '0');
+//     y = z + z;        // 2*a
+//     z = digitsum/y;
+//     tempsum = digitsum.mult10(1) + Verylong(w[k++] - '0');
+//     digitsum = -y*z.mult10(1) + tempsum - z*z;
+//     // decrease z by 1 and re-calculate when it is over-estimated.
+//     while(digitsum < Verylong::zero)
+//     {
+//       --z;
+//       digitsum = -y*z.mult10(1) + tempsum - z*z;
+//     }
+//     temp = temp + char(int(z) + '0');// store partial result
+//     z = sum = sum.mult10(1) + z;     // update value of the partial result
+//   }
+//   Verylong result(temp);
+//   return result;
+//}
+//
+//// Raise a number X to a power of degree
+//Verylong pow(const Verylong &X,const Verylong &degree)
+//{
+//   Verylong N(degree), Y("1"), x(X);
+//
+//   if(N == Verylong::zero) return Verylong::one;
+//   if(N < Verylong::zero) return Verylong::zero;
+//
+//   while(1)
+//   {
+//     if(N%Verylong::two != Verylong::zero)
+//     {
+//       Y = Y * x;
+//       N = N / Verylong::two;
+//       if(N == Verylong::zero) return Y;
+//     }
+//     else  N = N / Verylong::two;
+//     x = x * x;
+//   }
+//}
+//
+//// Double division function
+//double div(const Verylong &u,const Verylong &v)
+//{
+//   double qq = 0.0, qqscale = 1.0;
+//   Verylong w,y,b,c;
+//   int d, count;
+//   // number of significant digits
+//   int decno = numeric_limits<double>::digits;
+//
+//   if(v == Verylong::zero) 
+//   {
+//     cerr << "ERROR : Division by zero" << endl;
+//     return 0.0;
+//   }
+//   if(u == Verylong::zero) return 0.0;
+//
+//   w=abs(u); y=abs(v);
+//   while(w<y) { w = w.mult10(1); qqscale *= 0.1; }
+//
+//   int len = w.vlstr.length() - y.vlstr.length();
+//   string temp = w.vlstr.substr(0,w.vlstr.length()-len);
+//   c = Verylong(temp);
+//
+//   for(int i=0;i<=len;i++)
+//   {
+//     qq *= 10.0;
+//     b = Verylong::zero; d = 0;   // initialize b and d to 0
+//     while(b < c) { b += y; d += 1;}
+//
+//     if(c < b) { b -= y; d -= 1;} // if b>c, then we have added one too many
+//     qq += double(d);             // add to the quotient
+//     c = (c-b).mult10(1);         // the partial remainder * 10
+//     if(i < len)                  // and add to next digit
+//        c += Verylong(w.vlstr[w.vlstr.length()-len+i]-'0');
+//   }
+//   qq *= qqscale; count = 0;
+//
+//   while(c != Verylong::zero && count < decno)
+//   {
+//     qqscale *= 0.1;
+//     b = Verylong::zero; d = 0;   // initialize b and d to 0
+//     while(b < c) { b += y; d += 1;}
+//     if(c < b) { b -= y; d -= 1;} // if b>c, then we have added one too many
+//     qq += double(d)*qqscale;
+//     c = (c-b).mult10(1);
+//     count++;
+//   }
+//   if(u.vlsign^v.vlsign) qq *= (-1.0); // check for the sign
+//   return qq;
+//}
