@@ -2,6 +2,9 @@
 |  VERSIONE: 0.0.1  |
 +-------------------+
 
+23/06/2021:
+- Bignum: aggiunti divisione e modulo
+
 17/04/2021:
 - creazione del progetto GitHub
 - Bignum: miglioramento costruttore a stringa
