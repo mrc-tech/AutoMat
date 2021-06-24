@@ -345,14 +345,14 @@ Bignum operator / (const Bignum & x, const Bignum & y)
 			b = b - v; 
 			d = d - Bignum::one;
 		}
-		quotient = quotient + d;        // add to the quotient
+		quotient = quotient + d; // add to the quotient
 		if(i < len){
 			// partial remainder * 10 and add to next digit
 			c = (c-b).mult10(1);
 			c += Bignum(u.value[u.value.length()-len+i]-'0');
 		}
 	}
-	quotient.negativo = x.negativo ^ y.negativo;  // to determine sign
+	quotient.negativo = x.negativo ^ y.negativo; // to determine sign
 	return quotient;
 }
 
