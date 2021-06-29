@@ -80,7 +80,7 @@ class Matrix
 		Matrix<T> trace(); //return the diagonal vector of the square matrix
 		//funzioni esterne
 		double det() const; //calcola il determinante
-		Matrix<T> inv(); //calcola l'inversa
+		Matrix<T> inv() const; //calcola l'inversa
 //		double max_eigenvalue(double err); //ritorna il massimo autovalore calcolato numericamente
 //		double nearest_eigenvalue(double mu,double err); //ritorna il più vicino autovalore calcolato numericamente
 //		Matrix<T> nearest_eigenvector(double mu,double err); //ritorna il più vicino autovettore calcolato numericamente
@@ -661,7 +661,7 @@ template<typename T> double Matrix<T>::det() const
 }
 
 // Calcola la matrice inversa
-template<typename T> Matrix<T> Matrix<T>::inv()
+template<typename T> Matrix<T> Matrix<T>::inv() const
 {
 	return inversa(*this);
 }
