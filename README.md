@@ -2,5 +2,5 @@
 Simple _Computer Algebra System_ C++ library for learning purposes.
 
 ## Features
- - Arbitrary precision integers [da completare]
- - Matrix manipulations [da completare e migliorare]
+ - Arbitrary precision integers [_da completare_]
+ - Matrix manipulations [_da completare e migliorare_]
