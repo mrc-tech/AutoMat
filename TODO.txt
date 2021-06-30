@@ -6,4 +6,6 @@
 
 - fare degli esempi. Per Bignum.h potrei fare "BigFibonacci.cpp". Altri esempi mi verranno...
 
+- se si chiede di stampare un Bignum di una sola cifra stamperà anche una lettera alla fine. AGGIUSTARE
+
 - 

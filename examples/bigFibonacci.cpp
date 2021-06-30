@@ -9,13 +9,13 @@ const int N = 10000; //index of Fibonacci number
 
 int main()
 {
-	Bignum a = 1;
-	Bignum b = 1;
+	Bignum a = 1; // Fib(0)
+	Bignum b = 1; // Fib(1)
 	Bignum temp;
 	
 	cout << "Calculating...";
 	
-	for(int i=0;i<N;i++){
+	for(int i=1; i<N; i++){
 		temp = b;
 		b = b + a; //update
 		a = temp;
