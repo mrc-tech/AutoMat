@@ -8,4 +8,8 @@
 
 - se si chiede di stampare un Bignum di una sola cifra stamperà anche una lettera alla fine. AGGIUSTARE
 
+- fare l'esempio di bigFibonacci anche ricorsivamente
+
+- fare l'esempio di MersennePrimes, sempre per Bignum (potrebbe servire anche da benchmark)
+
 - 
