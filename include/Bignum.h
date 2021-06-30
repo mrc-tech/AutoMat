@@ -383,6 +383,33 @@ Bignum Bignum::operator %= (const Bignum &x)
 
 
 
+// Prefix increment operator
+Bignum Bignum::operator ++ ()
+{ return *this = *this + one; }
+
+// Postfix increment operator
+Bignum Bignum::operator ++ (int)
+{
+   Bignum result(*this);
+   *this = *this + one;
+   return result;
+}
+
+// Prefix decrement operator
+Bignum Bignum::operator -- ()
+{ return *this = *this - one; }
+
+// Postfix decrement operator
+Bignum Bignum::operator -- (int)
+{
+   Bignum result(*this);
+   *this = *this - one;
+   return result;
+}
+
+
+
+
 
 
 
