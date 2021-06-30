@@ -22,29 +22,35 @@ int main()
 //	mat2.VectorToMatrix(vec);
 	mat2 = vec;
 	
-	cout << mat2.transpose();
+//	cout << mat2.transpose();
+	mat2.transpose().print(cout);
 	if(mat2.isVector()) cout << "norma = " << mat2.norm() << endl;
 	cout << endl;
 	
 	
 	
-	Matrix<float> mat1(3,3);
+	Matrix<double> mat1(3,3);
 	
-	mat1 = random_Matrix<float>(3,3, 3);
+	mat1 = random_Matrix<double>(3,3, 3);
 	
-	cout << mat1 << endl;
+//	cout << mat1 << endl;
+	mat1.print(cout); cout << endl;
 	
 	mat1 = {{1,2,3},{4,3,5},{1,2,1}};
-	cout << "matrice:\n" << mat1 << endl;
+//	cout << "matrice:\n" << mat1 << endl;
+	cout << "matrice:\n"; mat1.print(cout); cout << endl;
 	
-	Matrix<float> inverse = mat1.inv();
+	Matrix<double> inverse = mat1.inv();
+//	Matrix<double> inverse = inversa(mat1);
 	
-	cout << inverse << endl;
+//	cout << inverse << endl;
+	inverse.print(cout); cout << endl;
 	
 	//list constructor
 	Matrix<int> pollo = {{1,2,3},
 						 {4,5,6}};
-	cout << pollo << endl;
+//	cout << pollo << endl;
+	pollo.print(cout); cout << endl;
 	pollo = identity<int>(3);
 	cout << "traccia = " << pollo.tr() << endl;
 	cout << endl;
@@ -53,22 +59,27 @@ int main()
 	cout << "autovalore massimo  = " << max_eigenvalue(mat1,0.000001) << endl;
 	cout << "autovalore \"minimo\" = " << nearest_eigenvalue(mat1,0,0.00001) << endl;
 	cout << "autovettore associato:" << endl;
-	cout << nearest_eigenvector(mat1,0,0.00001);
+//	cout << nearest_eigenvector(mat1,0,0.00001);
+	nearest_eigenvector(mat1,0,0.00001).print(cout);
 	
 	
 	
 	
 	cout << endl;
 	pollo = random_Matrix<int>(2,3, 3);
-	cout << pollo;
+//	cout << pollo;
+	pollo.print(cout);
 	cout << "Rimuovo la seconda riga:" << endl;
 	pollo.remove_row(1); //partendo da zero la seconda riga è quella numerata UNO
-	cout << pollo;
+//	cout << pollo;
+	pollo.print(cout);
 	cout << "Rimuovo la prima colonna:" << endl;
 	mat = pollo.remove_col(0);
-	cout << pollo;
+//	cout << pollo;
+	pollo.print(cout);
 	cout << "Ho rimosso:" << endl;
-	cout << mat;
+//	cout << mat;
+	mat.print(cout);
 	
 	
 	

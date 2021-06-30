@@ -11,7 +11,7 @@ template<typename T> double max_eigenvalue(Matrix<T> mat,double err)
 	se l'autovalore atteso è molto simile agli altri allora converge più lentamente
 	*/
 	//valore iniziale preso a caso
-	Matrix<float> x(mat.rows(),1);
+	Matrix<double> x(mat.rows(),1);
 	for(int i=0;i<mat.rows();i++) x(i,0) = 1; 
 	double lambda = (x.transpose() * mat * x)(0,0) / (x.transpose() * x)(0,0);
 	double newlambda;
@@ -39,7 +39,7 @@ template<typename T> double nearest_eigenvalue(Matrix<T> mat,double mu,double er
 	Matrix<T> id = identity<T>(mat.rows());
 	Matrix<T> temp = (mat - (id * mu)).inv();
 	//valore iniziale preso a caso
-	Matrix<float> x(mat.rows(),1);
+	Matrix<double> x(mat.rows(),1);
 	for(int i=0;i<mat.rows();i++) x(i,0) = 1; 
 	double lambda = (x.transpose() * mat * x)(0,0) / (x.transpose() * x)(0,0);
 	double newlambda;
@@ -71,7 +71,7 @@ template<typename T> Matrix<T> nearest_eigenvector(Matrix<T> mat,double mu,doubl
 	Matrix<T> temp = mat - (id * mu);
 	temp.inv();
 	//valore iniziale preso a caso
-	Matrix<float> x(mat.rows(),1);
+	Matrix<double> x(mat.rows(),1);
 	for(int i=0;i<mat.rows();i++) x(i,0) = 1; 
 	double lambda = (x.transpose() * mat * x)(0,0) / (x.transpose() * x)(0,0);
 	double newlambda;

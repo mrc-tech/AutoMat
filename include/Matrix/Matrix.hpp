@@ -20,6 +20,9 @@ TODO:
 ------------------------------------------------------------------------------------------------------------------
 CHANGELOG:
 v1.1
+	(30/06/2021):
+	- migliorato il copy constructor
+	- migliorato anche l'operatore = (adesso cancella i dati prima di riallocarli)
 	(29/06/2021):
 	- separate le funzioni in header files separati
 v1.0
@@ -61,7 +64,7 @@ class Matrix
 		virtual ~Matrix();
 		
 		// Operator overloading, for "standard" mathematical matrix operations
-		Matrix<T>& operator=(const Matrix<T>& rhs);
+		const Matrix<T>& operator = (const Matrix<T>& rhs);
 		
 		// Matrix mathematical operations
 		Matrix<T> operator + (const Matrix<T>& rhs);
@@ -79,14 +82,8 @@ class Matrix
 		T tr(); //return trace of square matrix
 		Matrix<T> trace(); //return the diagonal vector of the square matrix
 		//funzioni esterne
-		double det() const; //calcola il determinante
-		Matrix<T> inv() const; //calcola l'inversa
-//		double max_eigenvalue(double err); //ritorna il massimo autovalore calcolato numericamente
-//		double nearest_eigenvalue(double mu,double err); //ritorna il più vicino autovalore calcolato numericamente
-//		Matrix<T> nearest_eigenvector(double mu,double err); //ritorna il più vicino autovettore calcolato numericamente
-//		Matrix<T> identity(int n); //assegna la matrice identità di dimensione n                MODIFICARE
-//		void random(int max); //modifica la matrice in una random con numeri interi compresi tra [0,max]      MODIFICARE
-//		void randomf(float min,float max); //modifica la matrice in una random con numeri float compresi tra [min,max]       MODIFICARE
+		double det(); //calcola il determinante
+		Matrix<T> inv(); //calcola l'inversa
 		
 		// Matrix/scalar operations
 		Matrix<T> operator + (const T& rhs);
@@ -109,7 +106,7 @@ class Matrix
 		// Matrix vector conversion
 		std::vector<T> MatrixToVector(); //flatten matrix into monodimensional array
 		void VectorToMatrix(std::vector<T> vec); //create a column vector Matrix
-		Matrix<T>& operator=(const std::vector<T>& rhs); //vectorToMatrix con l'operatore
+		const Matrix<T>& operator = (const std::vector<T>& rhs); //vectorToMatrix con l'operatore
 		
 		// Access the individual elements
 		inline T& operator()(const unsigned& row, const unsigned& col) { return data[row*_cols + col]; };
@@ -130,7 +127,8 @@ class Matrix
 		
 		
 		// Print matrix
-		friend std::ostream& operator << (std::ostream& stream, const Matrix<double>& rhs); //NON SO PERCHè NON FUNGE QUA (è un problema di templates se non sbaglio...)
+		void print(std::ostream&);
+//		friend std::ostream& operator << (std::ostream& stream, const Matrix<T>& rhs); //NON SO PERCHè NON FUNGE QUA (è un problema di templates se non sbaglio...)
 };
 
 
@@ -158,7 +156,7 @@ template<typename T> Matrix<T>::Matrix(unsigned rows, unsigned cols, const T& in
 {
 	_rows = rows;
 	_cols = cols;
-	data = new T[rows * cols](); //alloca la memoria
+	data = new T[rows * cols]; //alloca la memoria dinamicamente
 }
 
 // Null Constructor
@@ -176,7 +174,7 @@ template<typename T> Matrix<T>::Matrix(std::initializer_list<std::initializer_li
 	_rows = list.size(); //numero di righe
 	_cols = list.begin()[0].size(); //numero di colonne
 	
-	data = new T[_rows * _cols](); //alloca la memoria
+	data = new T[_rows * _cols]; //alloca la memoria dinamicamente
 	
 	//assegna i valori
 	for(int r=0;r<_rows;r++){
@@ -190,10 +188,11 @@ template<typename T> Matrix<T>::Matrix(std::initializer_list<std::initializer_li
 
 // Copy Constructor
 template<typename T> Matrix<T>::Matrix(const Matrix<T>& rhs)
+	: _rows(rhs.rows()), _cols(rhs.cols()), data(new T[rhs.rows()*rhs.cols()])
 {
-	data = rhs.data;
-	_rows = rhs.rows();
-	_cols = rhs.cols();
+	for(int i=0;i<_rows;i++)
+		for(int j=0;j<_cols;j++)
+			data[i*_cols+j] = rhs(i,j);
 }
 
 // (Virtual) Destructor
@@ -202,26 +201,28 @@ template<typename T> Matrix<T>::~Matrix()
 	if(data) delete [] data;
 }
 
+
 // Assignment Operator
-template<typename T> Matrix<T>& Matrix<T>::operator = (const Matrix<T>& rhs)
+template<typename T> const Matrix<T>& Matrix<T>::operator = (const Matrix<T>& rhs)
 {
 	if (&rhs == this) return *this; //risparmia un po di calcoli
 	
 	unsigned new_rows = rhs.rows();
 	unsigned new_cols = rhs.cols();
 	
-	data = new T[new_rows * new_cols]();
+	if(data) delete [] data; //cancella i vecchi dati della matrice (se presenti)
+	data = new T[new_rows * new_cols]; //alloca dinamicamente lo spazio per i nuovi dati
 	
-	for (unsigned i=0; i<new_rows; i++) {
-		for (unsigned j=0; j<new_cols; j++) {
+	for (unsigned i=0; i<new_rows; i++)
+		for (unsigned j=0; j<new_cols; j++)
 			data[i*_cols + j] = rhs(i, j);
-		}
-	}
+	
 	_rows = new_rows;
 	_cols = new_cols;
 	
-	return *this;
+	return *this; //ritorna la reference a &Matrix<T>, in maniera tale da permettere uguaglianze concatenate (A = B = C)
 }
+
 
 // Addition of two matrices
 template<typename T> Matrix<T> Matrix<T>::operator + (const Matrix<T>& rhs)
@@ -232,18 +233,11 @@ template<typename T> Matrix<T> Matrix<T>::operator + (const Matrix<T>& rhs)
 	
 	for (unsigned i=0; i<_rows; i++) {
 		for (unsigned j=0; j<_cols; j++) {
-			result(i,j) = this->data[i][j] + rhs(i,j);
+			result(i,j) = this->data[i*_cols + j] + rhs(i,j);
 		}
 	}
 	
 	return result;
-}
-
-// Cumulative addition of this matrix and another
-template<typename T> Matrix<T>& Matrix<T>::operator += (const Matrix<T>& rhs)
-{
-	*this = *this + rhs;
-	return *this; //perchè dovrei ritornare il valore???????????????????????????
 }
 
 // Subtraction of this matrix and another
@@ -268,13 +262,6 @@ template<typename T> Matrix<T> Matrix<T>::operator - (const Matrix<T>& rhs)
 	return result;
 }
 
-// Cumulative subtraction of this matrix and another
-template<typename T> Matrix<T>& Matrix<T>::operator -= (const Matrix<T>& rhs)
-{
-	*this = *this - rhs;
-	return *this;
-}
-
 // Left multiplication of this matrix and another 
 //vale anche per i vettori [M * v] (vettori sono matrici con una sola colonna)
 template<typename T> Matrix<T> Matrix<T>::operator * (const Matrix<T>& rhs)
@@ -296,13 +283,6 @@ template<typename T> Matrix<T> Matrix<T>::operator * (const Matrix<T>& rhs)
 	return result;
 }
 
-// Cumulative left multiplication of this matrix and another
-template<typename T> Matrix<T>& Matrix<T>::operator *= (const Matrix<T>& rhs)
-{
-	*this = *this * rhs;
-	return *this;
-}
-
 // Element wise of this matrix and another (prodotto interno) [devono avere le stesse dimensioni]
 template<typename T> Matrix<T> Matrix<T>::operator ^ (const Matrix<T>& rhs)
 {
@@ -313,7 +293,7 @@ template<typename T> Matrix<T> Matrix<T>::operator ^ (const Matrix<T>& rhs)
 		
 	for (unsigned i=0; i<_rows; i++) {
 		for (unsigned j=0; j<_cols; j++) {
- 			result(i,j) += this->data[i][j] * rhs(i,j);
+ 			result(i,j) += this->data[i*_cols + j] * rhs(i,j);
 		}
 	}
 	
@@ -331,27 +311,32 @@ template<typename T> Matrix<T> Matrix<T>::operator % (const Matrix<T>& rhs)
 		
 	for (unsigned i=0; i<_rows; i++) {
 		for (unsigned j=0; j<_cols; j++) {
- 			result(i,j) += this->data[i][0] * rhs(0,j);
+ 			result(i,j) += this->data[i] * rhs(0,j);
 		}
 	}
 	
 	return result;
 }
 
-// Calculate a transpose of this matrix
-template<typename T> Matrix<T> Matrix<T>::transpose()
+// Cumulative addition of this matrix and another
+template<typename T> Matrix<T>& Matrix<T>::operator += (const Matrix<T>& rhs)
 {
-	Matrix result(_cols, _rows);
-	
-	for (unsigned i=0; i<_rows; i++) {
-		for (unsigned j=0; j<_cols; j++) {
-			result(j,i) = this->data[i*_cols + j];
-		}
-	}
-	
-	//*this = result; //cambia la matrice stessa!!
-	
-	return result;
+	*this = *this + rhs;
+	return *this; //perchè dovrei ritornare il valore???????????????????????????
+}
+
+// Cumulative subtraction of this matrix and another
+template<typename T> Matrix<T>& Matrix<T>::operator -= (const Matrix<T>& rhs)
+{
+	*this = *this - rhs;
+	return *this; //perchè dovrei ritornare il valore???????????????????????????
+}
+
+// Cumulative left multiplication of this matrix and another
+template<typename T> Matrix<T>& Matrix<T>::operator *= (const Matrix<T>& rhs)
+{
+	*this = *this * rhs;
+	return *this; //perchè dovrei ritornare il valore???????????????????????????
 }
 
 // Matrix/scalar addition
@@ -361,7 +346,7 @@ template<typename T> Matrix<T> Matrix<T>::operator + (const T& rhs)
 	
 	for (unsigned i=0; i<_rows; i++) {
 		for (unsigned j=0; j<_cols; j++) {
-			result(i,j) = this->data[i][j] + rhs;
+			result(i,j) = this->data[i*_cols + j] + rhs;
  		}
 	}
 	
@@ -375,7 +360,7 @@ template<typename T> Matrix<T> Matrix<T>::operator - (const T& rhs)
 	
  	for (unsigned i=0; i<_rows; i++) {
 		for (unsigned j=0; j<_cols; j++) {
-			result(i,j) = this->data[i][j] - rhs;
+			result(i,j) = this->data[i*_cols + j] - rhs;
 		}
 	}
 	
@@ -387,14 +372,14 @@ template<typename T> Matrix<T>& Matrix<T>::operator - ()
 {
 	for(unsigned r=0;r<_rows;r++){
 		for(unsigned c=0;c<_cols;c++){
-			this->data[r][c] = - this->data[r][c];
+			this->data[r*_cols + c] = - this->data[r*_cols + c];
 		}
 	}
 	return *this;
 }
 
 // Matrix/scalar multiplication
-template<typename T> Matrix<T> Matrix<T>::operator*(const T& rhs)
+template<typename T> Matrix<T> Matrix<T>::operator * (const T& rhs)
 {
 	Matrix result(_rows, _cols);
 	
@@ -449,6 +434,23 @@ template<typename T> Matrix<T>& Matrix<T>::operator /= (const T& rhs)
 	return *this;
 }
 
+
+// Calculate a transpose of this matrix
+template<typename T> Matrix<T> Matrix<T>::transpose()
+{
+	Matrix result(_cols, _rows);
+	
+	for (unsigned i=0; i<_rows; i++) {
+		for (unsigned j=0; j<_cols; j++) {
+			result(j,i) = this->data[i*_cols + j];
+		}
+	}
+	
+	//*this = result; //cambia la matrice stessa!!
+	
+	return result;
+}
+
 // Flatten Matrix into a monodimensional vector
 template<typename T> std::vector<T> Matrix<T>::MatrixToVector() //METTERLO IN UN HEADER SEPARATO "Matrix_utils.h"
 {
@@ -475,12 +477,13 @@ template<typename T> void Matrix<T>::VectorToMatrix(std::vector<T> vec) //METTER
 	*this = temp; //da ottimizzare meglio...
 }
 
-template<typename T> Matrix<T>& Matrix<T>::operator = (const std::vector<T>& rhs)
+template<typename T> const Matrix<T>& Matrix<T>::operator = (const std::vector<T>& rhs)
 {
 	//questa routine viene usata anche prima quindi la potrei mettere in una funzione private
 	_rows = rhs.size();
 	_cols = 1;
-	data = new T[_rows]();
+	if(data) delete [] data; //cancella i vecchi dati
+	data = new T[_rows]; //alloca la memoria per i nuovi dati
 	for (unsigned i=0; i<rhs.size(); i++) { 
 		data[i] = rhs[i];
 	}
@@ -601,7 +604,7 @@ template<typename T> Matrix<T> Matrix<T>::add_row(Matrix<T> row) //METTERLO IN U
 	Matrix<T> res(_rows+1,_cols); //matrice con una riga in più
 	for(int r=0;r<_rows;r++){
 		for(int c=0;c<_cols;c++){
-			res(r,c) = data[r][c];
+			res(r,c) = data[r*_cols + c];
 		}
 	}
 	//metto dentro la riga aggiuntiva
@@ -612,28 +615,28 @@ template<typename T> Matrix<T> Matrix<T>::add_row(Matrix<T> row) //METTERLO IN U
 	return res;
 }
 
-template<typename T> std::ostream& operator<<(std::ostream& stream,const Matrix<T>& rhs)
+template<typename T>
+void Matrix<T>::print(std::ostream& stream)
 {
-	for(int r=0;r<rhs.rows();r++){
-//		stream << "|";
-		for(int c=0;c<rhs.cols()-1;c++){
-			stream << rhs(r,c) << "  ";
+	for(int r=0;r<_rows;r++){
+		for(int c=0;c<_cols-1;c++){
+			stream << data[r*_cols + c] << " ";
 		}
-//		stream << rhs(r,rhs.cols()-1) << "|" << std::endl;
-		stream << rhs(r,rhs.cols()-1) << std::endl;
+		stream << data[r*_cols + _cols-1] << std::endl;
 	}
-	return stream;
 }
 
-//template<typename T>
-//void Matrix<T>::print(std::ostream& stream)
+//template<typename T> std::ostream& operator<<(std::ostream& stream,const Matrix<T>& rhs)
 //{
-//	for(int r=0;r<_rows;r++){
-//		for(int c=0;c<_cols-1;c++){
-//			stream << data[r*_cols + c] << " ";
+//	for(int r=0;r<rhs.rows();r++){
+////		stream << "|";
+//		for(int c=0;c<rhs.cols()-1;c++){
+//			stream << rhs(r,c) << "  ";
 //		}
-//		stream << data[r*_cols + _cols-1] << std::endl;
+////		stream << rhs(r,rhs.cols()-1) << "|" << std::endl;
+//		stream << rhs(r,rhs.cols()-1) << std::endl;
 //	}
+//	return stream;
 //}
 
 template<typename T> void Matrix<T>::map(std::function<float(float)> fun)
@@ -655,13 +658,13 @@ template<typename T> Matrix<T> Matrix<T>::mmap(std::function<float(float)> fun)
 }
 
 // Calcola il determinante
-template<typename T> double Matrix<T>::det() const
+template<typename T> double Matrix<T>::det()
 {
 	return determinante(*this);
 }
 
 // Calcola la matrice inversa
-template<typename T> Matrix<T> Matrix<T>::inv() const
+template<typename T> Matrix<T> Matrix<T>::inv()
 {
 	return inversa(*this);
 }
