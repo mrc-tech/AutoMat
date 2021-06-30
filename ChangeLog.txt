@@ -5,6 +5,7 @@
 30/06/2021:
 - rinominate le cartelle (quelle non caricate hanno l'underscore davanti)
 - aggiunto l'esempio "bigFibonacci" per la classe Bignum (programmato linearmente e non ricorsivo)
+- aggiustata la gestione della memoria per la classe Matrix. In particolare il copy constructor e l'operatore =
 - aggiunto l'esempio "MersennePrimes". Ci mette tantissimo a calcolare a causa del fatto che Bignum non è ottimizzato
 - aggiunte le definizioni delle funzioni ++ e -- per Bignum
 
