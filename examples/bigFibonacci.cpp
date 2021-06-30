@@ -1,3 +1,7 @@
+/*********************************************
+Fibonacci number: Fib(N) = Fib(N-1) + Fib(N-2)
+		  with: Fib(0) = Fib(1) = 1
+*********************************************/
 #include <iostream>
 
 #include "../include/Bignum.h"
