@@ -2,6 +2,9 @@
 |  VERSIONE: 0.0.1  |
 +-------------------+
 
+02/07/2021:
+- Ratio: creata la libreria che gestisce i numeri razionali (classe template)
+
 30/06/2021:
 - rinominate le cartelle (quelle non caricate hanno l'underscore davanti)
 - aggiunto l'esempio "bigFibonacci" per la classe Bignum (programmato linearmente e non ricorsivo)
