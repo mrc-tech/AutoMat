@@ -10,6 +10,10 @@ TODO:
 #include "identity.h "//per one()
 #include <string>
 
+
+template<typename T> T gcd(T,T);
+
+
 template <typename T>
 class Ratio
 {
@@ -18,9 +22,9 @@ class Ratio
 		T _den; //denominatore
 		
 	public:
-		Ratio() : _num(0), _den(1) {};
-		Ratio(const T num) : _num(num), _den(1) {};
-		Ratio(const T num,const T den) : _num(num), _den(den) {};
+		Ratio() : _num(zero(T())), _den(one(T())) {};
+		Ratio(const T num) : _num(num), _den(one(T())) {};
+		Ratio(const T,const T);
 		
 		//getters:
 		inline T num() { return _num; };
@@ -30,8 +34,8 @@ class Ratio
 		inline void setDen(T den) { _den = den; };
 		
 		//arithmetic and relational operators:
-		const Ratio<T>& operator = (const Ratio<T>&);
-		Ratio<T> operator - () const;
+		inline const Ratio<T>& operator = (const Ratio<T>& r) { _num = r._num; _den = r._den; return *this; };
+		inline Ratio<T> operator - () const { return Ratio<T>(-_num, _den); };
 		
 		Ratio<T> operator + (const Ratio<T>&) const;
 		Ratio<T> operator - (const Ratio<T>&) const;
@@ -50,12 +54,28 @@ class Ratio
 		inline bool operator >= (const Ratio<T>& r) const { return (*this>r) || (*this==r); };
 		inline bool operator <= (const Ratio<T>& r) const { return (*this<r) || (*this==r); };
 		
+		//conversion:
+		inline operator double() const { return double(_num)/double(_den); };
+//		inline operator float() const { return float(_num)/float(_den); };
+		
+		//other:
+		void normalize();
 		
 		//output functions:
 		std::ostream& output(std::ostream&) const;
 };
 
 
+
+template<typename T> Ratio<T>::Ratio(const T num, const T den) : _num(num), _den(den)
+{
+	if(num==zero(T())){
+		using std::operator<<; //dice al compilatore di usare l'operatore << standard
+		std::cerr << "Zero denominator in Rational Number " << std::endl;
+		return;
+	}
+	normalize();
+}
 
 
 template<typename T> Ratio<T> Ratio<T>::operator + (const Ratio<T> &rhs) const
@@ -73,6 +93,18 @@ template<typename T> Ratio<T> Ratio<T>::operator / (const Ratio<T> &rhs) const
 
 
 
+
+
+template<typename T> void Ratio<T>::normalize()
+{
+	T t;
+	if(_num < zero(T())) t = -_num; else t = _num; //prende il valore assoulto del numeratore
+	t = gcd(t, _den);
+	if(t > one(T())){ _num /= t; _den /= t; }
+	if(_den < zero(T())) { _num = -_num; _den = -_den; } //il denominatore è sempre positivo
+}
+
+
 template<typename T> std::ostream& Ratio<T>::output(std::ostream& s) const
 {
 	using std::operator<<; //dice al compilatore di usare l'operatore << standard
@@ -84,7 +116,19 @@ template<typename T> std::ostream& Ratio<T>::output(std::ostream& s) const
 
 // FUNZIONI AUSILIARIE ==================================================================================================
 
-template<typename T> std::ostream& operator << (std::ostream& s,const T r)
+
+template<typename T> T gcd(T a, T b)
+{
+	while(b > zero(T())){
+		T m = a % b;
+		a = b;
+		b = m;
+	}
+	return a;
+}
+
+
+template<typename T> std::ostream& operator << (std::ostream& s,const T r) // CREA DEI PROBLEMI ALL'OPERATORE << 
 {
 	return r.output(s);
 }
