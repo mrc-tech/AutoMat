@@ -4,12 +4,8 @@
 
 - permettere di inserire script di LUA per il calcolo matematico di oggetti più complessi? In maniera tale da permettere ad un eventuale utente di calcolare un piccolo script. Oppure semplicemente fare il parser di comandi AutoMatCal che prende in imput anche file composti da comandi?
 
-- fare degli esempi. Per Bignum.h potrei fare "BigFibonacci.cpp". Altri esempi mi verranno...
-
-- se si chiede di stampare un Bignum di una sola cifra stamperà anche una lettera alla fine. AGGIUSTARE
+- se si chiede di stampare un Bignum di una sola cifra stamperà anche una lettera alla fine (in bigFibonacci). AGGIUSTARE
 
 - fare l'esempio di bigFibonacci anche ricorsivamente
-
-- fare l'esempio di MersennePrimes, sempre per Bignum (potrebbe servire anche da benchmark)
 
 - 
