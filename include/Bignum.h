@@ -88,9 +88,9 @@ private:
 
 // Class Data
 
-const Bignum Bignum::zero = Bignum(0);
+const Bignum Bignum::zero = Bignum(0); //INCLUDERE NELLA DEFINIZIONE "identity.h" ???
 
-const Bignum Bignum::one  = Bignum(1);
+const Bignum Bignum::one  = Bignum(1); //INCLUDERE NELLA DEFINIZIONE "identity.h" ???
 
 const Bignum Bignum::two  = Bignum(2);
 
