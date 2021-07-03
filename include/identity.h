@@ -28,8 +28,8 @@ template<> int zero(int) { return (int) 0; }
 template<> int one(int)  { return (int) 1; }
 template<> long zero(long) { return (long) 0; }
 template<> long one(long)  { return (long) 1; }
-template<> float zero(float) { return (float) 0.0; }
-template<> float one(float)  { return (float) 1.0; }
+template<> float zero(float) { return (float) 0.0f; }
+template<> float one(float)  { return (float) 1.0f; }
 template<> double zero(double) { return (double) 0.0; }
 template<> double one(double)  { return (double) 1.0; }
 

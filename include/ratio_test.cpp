@@ -41,5 +41,10 @@ int main()
 	cout << veryBig << endl;
 	cout << veryBig * veryBig << endl;
 	
+	cout << zero(Bignum()) << endl;
+	cout << one(Bignum()) << endl;
+	cout << one(int()) << endl;
+	
+	
 	return 0;
 }
