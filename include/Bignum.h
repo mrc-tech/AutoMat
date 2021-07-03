@@ -5,17 +5,11 @@ TODO:
 - inserire le funzioni ausiliarie (sqrt, pow, etc.)
 
 
-
-
-
 ***********************************/
-
-
-
-
 //#include <iostream>
 #include <cstring>
 #include <string> //salva i dati in una stringa (un char occupa il doppio rispetto a 4 bit, che è più compatto)
+#include <limits>
 
 
 class Bignum 
@@ -514,7 +508,7 @@ std::istream & operator >> (std::istream & s, Bignum & v)
 
 
 
-// ################ FUNZIONI AGGIUNTIVE ################
+// FUNZIONI AGGIUNTIVE ===================================================================================================
 
 ////somma con un int
 //Bignum operator + (const int a, const Bignum x) { return Bignum(a) + x; }
@@ -531,7 +525,7 @@ std::istream & operator >> (std::istream & s, Bignum & v)
 
 // DA IMPLEMENTARE !!!!!!!!!!!!!
 
-//
+
 //BigInt gcd(BigInt a, BigInt b) {
 //    Set(a);
 //    Set(b);
@@ -543,11 +537,81 @@ std::istream & operator >> (std::istream & s, Bignum & v)
 //    Set(a);
 //    return a;
 //}
-//
+
+
 //BigInt lcm(BigInt a, BigInt b) {
 //    return (a*b/gcd(a,b));
 //}
-//
+
+
+// Raise a number X to a power of degree
+Bignum pow(const Bignum& X, const Bignum& degree)
+{
+	Bignum N(degree), Y("1"), x(X);
+	
+	if(N == Bignum::zero) return Bignum::one;
+	if(N <  Bignum::zero) return Bignum::zero;
+	
+	while(true){
+		if(N % Bignum::two != Bignum::zero){
+			Y = Y * x;
+			N = N / Bignum::two;
+			if(N == Bignum::zero) return Y;
+		} else N = N / Bignum::two;
+		x = x * x;
+	}
+}
+
+
+// Double division function
+double div(const Bignum& x, const Bignum& y)
+{
+	double qq = 0.0, qqscale = 1.0;
+	Bignum u,v,b,c;
+	int d, count;
+	// number of significant digits
+	int decno = std::numeric_limits<double>::digits;
+	
+	if(x == Bignum::zero) {
+		std::cerr << "ERROR : Division by zero" << std::endl;
+		return 0.0;
+	}
+	if(x == Bignum::zero) return 0.0;
+	
+	u=abs(x); v=abs(y);
+	while(u<v) { u = u.mult10(1); qqscale *= 0.1; }
+	
+	int len = u.value.length() - v.value.length();
+	std::string temp = u.value.substr(0,u.value.length()-len);
+	c = Bignum(temp);
+	
+	for(int i=0;i<=len;i++){
+		qq *= 10.0;
+		b = Bignum::zero; d = 0; // initialize b and d to 0
+		while(b < c) { b += v; d += 1; }
+		
+		if(c < b) { b -= v; d -= 1;} // if b>c, then we have added one too many
+		qq += double(d); // add to the quotient
+		c = (c-b).mult10(1); // the partial remainder * 10
+		if(i < len) c += Bignum(u.value[u.value.length()-len+i]-'0'); // and add to next digit
+	}
+	qq *= qqscale; count = 0;
+	
+	while(c != Bignum::zero && count < decno){
+		qqscale *= 0.1;
+		b = Bignum::zero; d = 0; // initialize b and d to 0
+		while(b < c) { b += v; d += 1; }
+		if(c < b) { b -= v; d -= 1; } // if b>c, then we have added one too many
+		qq += double(d)*qqscale;
+		c = (c-b).mult10(1);
+		count++;
+	}
+	if(v.negativo ^ y.negativo) qq *= (-1.0); // check for the sign
+	
+	return qq;
+}
+
+
 //// Calculate the integer square root of a number
 //// based on the formula (a+b)^2 = a^2 + 2ab + b^2
 //Verylong sqrt(const Verylong &v)
@@ -595,76 +659,4 @@ std::istream & operator >> (std::istream & s, Bignum & v)
 //   }
 //   Verylong result(temp);
 //   return result;
-//}
-//
-//// Raise a number X to a power of degree
-//Verylong pow(const Verylong &X,const Verylong &degree)
-//{
-//   Verylong N(degree), Y("1"), x(X);
-//
-//   if(N == Verylong::zero) return Verylong::one;
-//   if(N < Verylong::zero) return Verylong::zero;
-//
-//   while(1)
-//   {
-//     if(N%Verylong::two != Verylong::zero)
-//     {
-//       Y = Y * x;
-//       N = N / Verylong::two;
-//       if(N == Verylong::zero) return Y;
-//     }
-//     else  N = N / Verylong::two;
-//     x = x * x;
-//   }
-//}
-//
-//// Double division function
-//double div(const Verylong &u,const Verylong &v)
-//{
-//   double qq = 0.0, qqscale = 1.0;
-//   Verylong w,y,b,c;
-//   int d, count;
-//   // number of significant digits
-//   int decno = numeric_limits<double>::digits;
-//
-//   if(v == Verylong::zero) 
-//   {
-//     cerr << "ERROR : Division by zero" << endl;
-//     return 0.0;
-//   }
-//   if(u == Verylong::zero) return 0.0;
-//
-//   w=abs(u); y=abs(v);
-//   while(w<y) { w = w.mult10(1); qqscale *= 0.1; }
-//
-//   int len = w.vlstr.length() - y.vlstr.length();
-//   string temp = w.vlstr.substr(0,w.vlstr.length()-len);
-//   c = Verylong(temp);
-//
-//   for(int i=0;i<=len;i++)
-//   {
-//     qq *= 10.0;
-//     b = Verylong::zero; d = 0;   // initialize b and d to 0
-//     while(b < c) { b += y; d += 1;}
-//
-//     if(c < b) { b -= y; d -= 1;} // if b>c, then we have added one too many
-//     qq += double(d);             // add to the quotient
-//     c = (c-b).mult10(1);         // the partial remainder * 10
-//     if(i < len)                  // and add to next digit
-//        c += Verylong(w.vlstr[w.vlstr.length()-len+i]-'0');
-//   }
-//   qq *= qqscale; count = 0;
-//
-//   while(c != Verylong::zero && count < decno)
-//   {
-//     qqscale *= 0.1;
-//     b = Verylong::zero; d = 0;   // initialize b and d to 0
-//     while(b < c) { b += y; d += 1;}
-//     if(c < b) { b -= y; d -= 1;} // if b>c, then we have added one too many
-//     qq += double(d)*qqscale;
-//     c = (c-b).mult10(1);
-//     count++;
-//   }
-//   if(u.vlsign^v.vlsign) qq *= (-1.0); // check for the sign
-//   return qq;
 //}

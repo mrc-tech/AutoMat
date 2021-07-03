@@ -21,6 +21,9 @@ int main()
 	cout << "z-x   = " << z - x      << " parsec" << endl;
 	cout << "2*y   = " << 2 * y      << " parsec" << endl;
 	cout << "y*z   = " << y * z      << " parsec^2" << endl;
+	cout << endl;
+	cout << div(Bignum("405465165846846984984"), Bignum("27498578684651684798")) << endl;
+	cout << pow(Bignum("239462384682"), 64) << endl;
 	
 	cout << endl;
 	cout << "x   = ";
@@ -40,22 +43,10 @@ int main()
 	cout << "x>y = " << ((x>y)?"vero":"falso") << endl;
 	cout << "x/y = " << x/y << endl;
 	cout << "x%y = " << x%y << endl;
-
-
-	system("pause");
 	
-
-	// calcola Fibonacci:	
-//	Bignum temp;
-//	Bignum n1 = 1;
-//	Bignum n2 = 1;
-//	for(int i=0;i<1000;i++){
-//		cout << n2 << endl;
-//		temp = n2;
-//		n2 = n2 + n1; //aggiorna 
-//		n1 = temp;
-//	}
-
+	
+	
+	system("pause");
 	
 	return 0;
 }

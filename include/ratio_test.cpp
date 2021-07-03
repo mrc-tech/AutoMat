@@ -46,5 +46,6 @@ int main()
 	cout << one(int()) << endl;
 	
 	
+	
 	return 0;
 }
