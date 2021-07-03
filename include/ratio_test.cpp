@@ -33,7 +33,6 @@ int main()
 	cout << (double)(a*b)-b << endl;
 	
 	Ratio<Bignum> big(2725466,382672);
-	using std::operator<<; //LEZZATA CAUSATA DALL'OVERLOAD DELL'OPERATORE<< (per la classe Ratio)
 	cout << "gcd(" << big << ") = " << gcd(big.num(), big.den()) << endl;
 	big.normalize();
 	cout << big << endl;

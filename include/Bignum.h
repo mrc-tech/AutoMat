@@ -328,7 +328,6 @@ Bignum operator / (const Bignum & x, const Bignum & y)
 	Bignum u,v,b,c,d,quotient=Bignum::zero;
 	
 	if(y == Bignum::zero) {
-		using std::operator<<; //dice al compilatore di usare l'operatore << standard (LEZZATA CAUSATA DA RATIO)
 		std::cerr << "Error : division by zero" << std::endl;
 		return Bignum::zero;
 	}
@@ -495,7 +494,6 @@ void swap(Bignum & x, Bignum & y)
 std::ostream& operator << (std::ostream& os, const Bignum& n)
 {
 	//stampa il valore dell'intero sullo stream di output (console, file o altro)
-//	using std::operator<<; //dice al compilatore di usare l'operatore << standard (LEZZATA CAUSATA DA RATIO)
 	if(n.negativo) os << '-'; //aggiunge il segno (solo se è negativo)
 	os << n.value; //aggiunge il valore
 	return os; //ritorna lo stream

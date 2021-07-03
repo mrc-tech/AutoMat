@@ -62,7 +62,10 @@ class Ratio
 		void normalize();
 		
 		//output functions:
-		std::ostream& output(std::ostream&) const;
+		friend std::ostream& operator << (std::ostream& out, const Ratio<T> r) {
+			if(r._den == one(T())) return out << r._num;
+			return out << r._num << "/" << r._den;
+		}
 };
 
 
@@ -105,13 +108,6 @@ template<typename T> void Ratio<T>::normalize()
 }
 
 
-template<typename T> std::ostream& Ratio<T>::output(std::ostream& s) const
-{
-	using std::operator<<; //dice al compilatore di usare l'operatore << standard
-	if(_den == one(T())) return s << _num;
-	return s << _num << "/" << _den;
-}
-
 
 
 // FUNZIONI AUSILIARIE ==================================================================================================
@@ -125,12 +121,6 @@ template<typename T> T gcd(T a, T b)
 		b = m;
 	}
 	return a;
-}
-
-
-template<typename T> std::ostream& operator << (std::ostream& s,const T r) // CREA DEI PROBLEMI ALL'OPERATORE << 
-{
-	return r.output(s);
 }
 
 #endif
