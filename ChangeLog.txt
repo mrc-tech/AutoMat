@@ -5,6 +5,7 @@
 04/07/2021:
 - Bignum: aggiunte le operazioni di conversione (casting)
 - aggiunto l'esempio "logistic"
+- Bignum_fast: aggiunta la classe di prova che invece di usare le stringhe per gestire i dati, usa un'array di unsigned long long (ulong64)
 
 02/07/2021:
 - Ratio: creata la libreria che gestisce i numeri razionali (classe template)
