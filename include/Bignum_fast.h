@@ -11,8 +11,11 @@ TODO:
 //#include <cstring>
 //#include <string> //salva i dati in una stringa (un char occupa il doppio rispetto a 4 bit, che è più compatto)
 #include <limits>
+#include <cmath>
 
 //#include "identity.h"
+
+using namespace std; //TEMPORANEO PER IL DEBIG
 
 typedef unsigned long long ulong64;
 
@@ -20,14 +23,16 @@ typedef unsigned long long ulong64;
 class Bignum 
 {
 	ulong64 len; //numero di cifre
-	ulong64 * data; //valore del numero salvato in vettore ulong64
-	const unsigned int Ncifre = 4; //numero di cifre che ogni elemento del vettore descrive
+	vector<ulong64> data; //valore del numero salvato in vettore ulong64
+	const unsigned int Ncifre = 8; //numero di cifre che ogni elemento del vettore descrive
 	bool negativo = false; //segno: 0 = positivo; 1 = negativo
 	
 public:
 	Bignum();
-	Bignum(long int);
+	Bignum(ulong64);
+	Bignum(const Bignum&); //copy constructor
 //	Bignum(const std::string&); //NON SONO SICURO DEL PERCHè COME REFERENCE.... (forse risparmio memoria??)
+	~Bignum();
 	
 //	inline std::string getValue() const { return value; };
 	inline bool getSign() const { return negativo; };
@@ -42,7 +47,7 @@ public:
 //	Bignum operator -- ();          // prefix  decrement operator
 //	Bignum operator -- (int);       // postfix decrement operator
 	
-	inline Bignum operator += (const Bignum &x) { return *this = *this + x; };
+//	inline Bignum operator += (const Bignum &x) { return *this = *this + x; };
 //	inline Bignum operator -= (const Bignum &x) { return *this = *this - x; };
 //	inline Bignum operator *= (const Bignum &x) { return *this = *this * x; };
 //	inline Bignum operator /= (const Bignum &x) { return *this = *this / x; };
@@ -54,12 +59,12 @@ public:
 //	friend Bignum operator / (const Bignum&,const Bignum&);
 //	friend Bignum operator % (const Bignum&,const Bignum&);
 	
-	friend bool operator == (const Bignum&,const Bignum&);
-	friend bool operator != (const Bignum&,const Bignum&);
-	friend bool operator <  (const Bignum&,const Bignum&);
-	friend bool operator <= (const Bignum&,const Bignum&);
-	friend bool operator >  (const Bignum&,const Bignum&);
-	friend bool operator >= (const Bignum&,const Bignum&);
+//	friend bool operator == (const Bignum&,const Bignum&);
+//	friend bool operator != (const Bignum&,const Bignum&);
+//	friend bool operator <  (const Bignum&,const Bignum&);
+//	friend bool operator <= (const Bignum&,const Bignum&);
+//	friend bool operator >  (const Bignum&,const Bignum&);
+//	friend bool operator >= (const Bignum&,const Bignum&);
 	
 	// funzioni aggiuntive
 	friend Bignum abs(const Bignum&);
@@ -104,24 +109,31 @@ const Bignum zero = Bignum(0); //INCLUDERE NELLA DEFINIZIONE "identity.h" ???
 
 Bignum::Bignum()
 {
-	data = new ulong64[1]; //alloca la memoria per il primo set di cifre
-	data[0] = 0; //azzera il valore
+	data.push_back(0); //azzera il valore
 	len = 1; //una cifra (lo zero)
 	negativo = false; //lo zero è considerato positivo
 }
 
 
-Bignum::Bignum(long int a)
+Bignum::Bignum(ulong64 a)
 {
-	int numCifre = 6; //DEVO CALCOLARE QUANTE CIFRE HA a PER ALLOCARE IL GIUSTO QUANTITATIVO DI MEMORIA PER data
-	data = new ulong64[numCifre/Ncifre]; //
+	int numCifre = Ncifre; //DEVO CALCOLARE QUANTE CIFRE HA a PER ALLOCARE IL GIUSTO QUANTITATIVO DI MEMORIA PER data
 	negativo = false; //di default è positivo
 	if(a < 0){
 		negativo = true;
 		a = (-a); //il valore nella stringa è comunque positivo (modulo)
 	}
-	data[0] = (ulong64) a;
+	data.push_back(a);
 	len = numCifre;
+}
+
+
+// Copy Constructor
+Bignum::Bignum(const Bignum& n)
+	: len(n.len)
+{
+//	for(int i=0;i<n.data.size();i++) data.push_back(n.data[i]);
+	data = n.data;
 }
 
 
@@ -146,14 +158,19 @@ Bignum::Bignum(long int a)
 //}
 
 
+Bignum::~Bignum()
+{}
+
+
+
+
+
 
 
 // Bignum = long long
 const Bignum & Bignum::operator = (const long long& num)
 {
 	Bignum temp(num);
-	if(data) delete [] data;
-	data = new ulong64[temp.len];
 	data = temp.data;
 	len = temp.len;
 	negativo = temp.negativo;
@@ -167,8 +184,6 @@ const Bignum & Bignum::operator = (const Bignum &rhs)
 {
 	if(this == &rhs) return *this;
 	
-	if(data) delete [] data;
-	data = new ulong64[rhs.Ncifre];
 	data = rhs.data;
 	len = rhs.len;
 	negativo = rhs.negativo;
@@ -177,12 +192,12 @@ const Bignum & Bignum::operator = (const Bignum &rhs)
 }
 
 
-bool operator == (const Bignum & x,const Bignum & y)
-{ return ((x.negativo == y.negativo) && (x.data == y.data)); }
+//bool operator == (const Bignum & x,const Bignum & y)
+//{ return ((x.negativo == y.negativo) && (x.data == y.data)); }
 
 
-bool operator != (const Bignum & x,const Bignum & y)  
-{ return !(x == y); }
+//bool operator != (const Bignum & x,const Bignum & y)  
+//{ return !(x == y); }
 
 
 //bool operator < (const Bignum & x,const Bignum & y)
@@ -214,14 +229,14 @@ bool operator != (const Bignum & x,const Bignum & y)
 
 
 // Unary - operator
-Bignum Bignum::operator -() const
-{
-    Bignum temp(*this);
-    if(temp != zero) temp.negativo = !negativo;
-    return temp;
-//    if(*this != zero) negativo = !negativo;
-//    return *this;
-}
+//Bignum Bignum::operator -() const
+//{
+//    Bignum temp(*this);
+//    if(temp != zero) temp.negativo = !negativo;
+//    return temp;
+////    if(*this != zero) negativo = !negativo;
+////    return *this;
+//}
 
 
 
@@ -236,8 +251,6 @@ Bignum operator + (const Bignum & x, const Bignum & y)
 	ulong64 d1, d2; //cifre dei due numeri da sommare
 	ulong64 digitsum; //somma temporanea delle cifre
 	ulong64 carry = 0; //riporto (se eccede 9) sommando due interi il riporto può essere massimo 1
-//	std::string::const_reverse_iterator i, j; //iteratori delle stringhe (contrario perchè la cifra meno significativa è l'ultimo elemento delal stringa, quindi deve cominciare dalla fine)
-//	std::string temp = ""; //variabile di appoggio per calcolare il risultato
 	std::vector<ulong64> temp;
 	Bignum res;
 	
@@ -247,21 +260,26 @@ Bignum operator + (const Bignum & x, const Bignum & y)
 //		else           return x-abs(y); //x è positivo, y è negativo
 //	}
 	
+	
+//	cout << "x.len=" << x.len << "  y.len:" << x.len << endl;
+	
 	int i = 0;
 	int j = 0;
-	while(i<x.len || j<y.len){
-		d1 = (i == x.len) ? 0 : x.data[i++]; // get digit
-		d2 = (j == y.len) ? 0 : y.data[j++]; // get digit
+	while(i<x.data.size() || j<y.data.size()){
+		d1 = (i == x.data.size()) ? 0 : x.data[i++]; // get digit
+		d2 = (j == y.data.size()) ? 0 : y.data[j++]; // get digit
 		digitsum = d1 + d2 + carry; //somma le cifre
-		carry = digitsum % x.Ncifre; //imposta il riporto, se cè
-		digitsum -= x.Ncifre * carry; //se c'è il riporto ovviamente lo detrae dalla cifra
+//		std::cout << "Step1:  " << d1 << " " << d2 << "  " << digitsum << " " << carry << std::endl;
+		if(digitsum <= pow(10,x.Ncifre)) carry = 0; else carry = digitsum / (ulong64)pow(10,x.Ncifre); //imposta il riporto, se cè
+		digitsum -= pow(10,x.Ncifre) * carry; //se c'è il riporto ovviamente lo detrae dalla cifra
 		temp.push_back(digitsum); //aggiunge la cifra trovata a temp
+//		std::cout << "Step2:  " << d1 << " " << d2 << "  " << digitsum << " " << carry << std::endl;
 	}
 	if(carry>0) temp.push_back(carry);  //se, alla fine, è rimasto ancora del resto aggiunge una cifra significativa
-	res.len = temp.size();
+	res.len = temp.size() * x.Ncifre; //LEZZATA SBAGLIATA
 	if(x.negativo) res.negativo = true;
-	res.data = new ulong64[x.Ncifre]; //alloca la memoria
-	for(i=0;i<res.length();i++) res.data[i] = temp[i];
+	res.data = temp;
+//	std::cout << "pollo" << res.len << std::endl;
 	
 	return res;
 }
@@ -547,7 +565,7 @@ std::ostream& operator << (std::ostream& os, const Bignum& n)
 {
 	//stampa il valore dell'intero sullo stream di output (console, file o altro)
 	if(n.negativo) os << '-'; //aggiunge il segno (solo se è negativo)
-	if(n.len/n.Ncifre < 1) os << n.data[0]; else for(int i=0;i<n.len/n.Ncifre;i++) os << n.data[i]; //aggiunge il valore
+	if(n.len/n.Ncifre < 1) os << n.data[0]; else for(int i=0;i<n.data.size();i++) os << n.data[i]; //aggiunge il valore
 	return os; //ritorna lo stream
 }
 
