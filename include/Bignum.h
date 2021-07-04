@@ -65,6 +65,11 @@ public:
 	static const Bignum one;
 	static const Bignum two;
 	
+	// Conversion operators
+	operator int () const;
+	operator double () const;
+	operator std::string () const;
+	
     // I/O stream functions
 	friend std::ostream & operator << (std::ostream&,const Bignum&);
 	friend std::istream & operator >> (std::istream&,Bignum&);
@@ -400,6 +405,60 @@ Bignum Bignum::operator -- (int)
    *this = *this - one;
    return result;
 }
+
+
+
+
+
+
+
+
+Bignum::operator int() const
+{
+	int number, factor = 1;
+	static Bignum max0(std::numeric_limits<int>::max());
+	static Bignum min0(std::numeric_limits<int>::min()+1);
+	std::string::const_reverse_iterator j=value.rbegin();
+	
+	if(*this > max0){
+		std::cerr << "Error: Conversion Verylong->integer is not possible" << std::endl;
+		return std::numeric_limits<int>::max();
+	}else if(*this < min0){
+		std::cerr << "Error: Conversion Verylong->integer is not possible" << std::endl;
+		return std::numeric_limits<int>::min();
+	}
+	
+	number = *j - '0';
+	
+	for(j++;j!=value.rend();j++){
+		factor *= 10;
+		number += (*j-'0') * factor;
+	}
+	
+	if(negativo) return -number;
+	return number;
+}
+   
+Bignum::operator double() const
+{
+	double sum, factor = 1.0;
+	std::string::const_reverse_iterator i = value.rbegin();
+	
+	sum = double(*i) - '0';
+	for(i++;i!=value.rend();i++){
+		factor *= 10.0;
+		sum += double(*i-'0') * factor;
+	}
+	if(negativo) return -sum;
+	return sum;
+}
+
+Bignum::operator std::string () const
+{
+	if(value.length() == 0) return std::string("0");
+	return value;
+}
+
 
 
 

@@ -2,6 +2,10 @@
 |  VERSIONE: 0.0.1  |
 +-------------------+
 
+04/07/2021:
+- Bignum: aggiunte le operazioni di conversione (casting)
+- aggiunto l'esempio "logistic"
+
 02/07/2021:
 - Ratio: creata la libreria che gestisce i numeri razionali (classe template)
 - Bignum: aggiunte le funzioni pow() e div()
