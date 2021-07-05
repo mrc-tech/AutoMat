@@ -15,6 +15,14 @@ int main()
 	Bignum n2 = 1; // Fib(1)
 	Bignum temp;
 	
+	temp = 0;
+	int count = 1;
+	while(count <= 1200){
+		temp = temp + Bignum(1);
+		cout << count << ": \t" << temp << endl;
+		count++;
+	}
+	
 	chrono::high_resolution_clock::time_point now = chrono::high_resolution_clock::now();
 	
 	for(int i=2; i<=N; i++){
