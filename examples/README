@@ -1,6 +1,0 @@
-Examples about the AutoMat library features.
-
- - bigFibonacci:	calculate a very large Fibonacci number
- - logistic:		calculate the logistic map sequence
- - MersennePrimes:	find Mersenne primes numbers
- - MersennePrimes2:	find Mersenne primes with the Lucas–Lehmer test for increase performance
