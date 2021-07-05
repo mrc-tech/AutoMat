@@ -7,3 +7,6 @@ Bignum:
 
 Ratio:
  - logistic:		calculate the logistic map sequence
+
+Matrix:
+ - 
