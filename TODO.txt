@@ -8,4 +8,6 @@
 
 - fare l'esempio di bigFibonacci anche ricorsivamente
 
+- fare una classe con le costanti principali (pi, Euler, Catalan, ....). Fare anche un esempio per calcolare ad esempio pi greco con molte cifre. Per fare questa classe di costanti matematiche mi servono i float a precisione infinita (classe Real)
+
 - 
