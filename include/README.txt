@@ -3,7 +3,7 @@ Bugnum_fast:	class for multi-precision signed integers where data are stored int
 
 Ratio:		rational number template class
 
-Matrix:		Matrices and vectors class
+Matrix:		Matrices and vectors "template" class
 
 
 # INTERNALS =================================================================================
