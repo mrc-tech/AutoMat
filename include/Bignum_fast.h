@@ -1,9 +1,6 @@
 /**********************************
 TODO:
-- migliorare la gestione del segno negli operatori
-- fare il controllo delle cifre in ingresso
-- inserire le funzioni ausiliarie (sqrt, pow, etc.)
-
+- 
 
 ***********************************/
 #include <iostream>
@@ -16,7 +13,7 @@ TODO:
 
 //#include "identity.h"
 
-using namespace std; //TEMPORANEO PER IL DEBIG
+using namespace std; //TEMPORANEO PER IL DEBUG
 
 typedef unsigned long long ulong64;
 
@@ -25,18 +22,18 @@ class Bignum
 {
 	vector<ulong64> data; //valore del numero salvato in vettore ulong64
 	bool negativo = false; //segno: 0 = positivo; 1 = negativo
-	const unsigned int Ncifre = 13; //numero di cifre che ogni elemento del vettore descrive (costante per tutti)
+	
+	const unsigned int chunkSize = 13; //numero di cifre che ogni elemento del vettore descrive (costante per tutti)
 	
 public:
 	Bignum();
 	Bignum(ulong64);
 	Bignum(const Bignum&); //copy constructor
 //	Bignum(const std::string&); //NON SONO SICURO DEL PERCHè COME REFERENCE.... (forse risparmio memoria??)
-	~Bignum();
 	
 //	inline std::string getValue() const { return value; };
 	inline bool getSign() const { return negativo ? -1 : 1; };
-	inline ulong64 length() const { return data.size() * Ncifre; }; //L'ULTIMO ELEMENTO POTREBBE AVERE UN NUMERO DI CIFRE MINORI DI Ncifre
+	inline ulong64 length() const { return data.size() * chunkSize; }; //L'ULTIMO ELEMENTO POTREBBE AVERE UN NUMERO DI CIFRE MINORI DI Ncifre
 	
 	const Bignum & operator=(const long long&);
 	const Bignum & operator=(const Bignum&);
@@ -47,35 +44,35 @@ public:
 //	Bignum operator ++ ();          // prefix  increment operator
 //	Bignum operator -- ();          // prefix  decrement operator
 	
-//	inline Bignum operator += (const Bignum &x) { return *this = *this + x; };
-//	inline Bignum operator -= (const Bignum &x) { return *this = *this - x; };
-//	inline Bignum operator *= (const Bignum &x) { return *this = *this * x; };
-//	inline Bignum operator /= (const Bignum &x) { return *this = *this / x; };
-//	inline Bignum operator %= (const Bignum &x) { return *this = *this % x; };
-	
 	friend Bignum operator + (const Bignum&,const Bignum&);
 //	friend Bignum operator - (const Bignum&,const Bignum&);
 //	friend Bignum operator * (const Bignum&,const Bignum&);
 //	friend Bignum operator / (const Bignum&,const Bignum&);
 //	friend Bignum operator % (const Bignum&,const Bignum&);
 	
-//	friend bool operator == (const Bignum&,const Bignum&);
-//	friend bool operator != (const Bignum&,const Bignum&);
+	inline Bignum operator += (const Bignum &x) { return *this = *this + x; };
+//	inline Bignum operator -= (const Bignum &x) { return *this = *this - x; };
+//	inline Bignum operator *= (const Bignum &x) { return *this = *this * x; };
+//	inline Bignum operator /= (const Bignum &x) { return *this = *this / x; };
+//	inline Bignum operator %= (const Bignum &x) { return *this = *this % x; };
+	
+	friend bool operator == (const Bignum&,const Bignum&);
+	friend bool operator != (const Bignum&,const Bignum&);
 //	friend bool operator <  (const Bignum&,const Bignum&);
 //	friend bool operator <= (const Bignum&,const Bignum&);
 //	friend bool operator >  (const Bignum&,const Bignum&);
 //	friend bool operator >= (const Bignum&,const Bignum&);
 	
-	// funzioni aggiuntive
+	// funzioni aggiuntive PERCHè METTERLE FRIEND? 
 	friend Bignum abs(const Bignum&);
 //	friend Bignum sqrt(const Bignum&);
 //	friend Bignum pow(const Bignum&,const Bignum&);
 //	friend double div(const Bignum&,const Bignum&);
 	
 	// Class Data
-//	static const Bignum zero;
-//	static const Bignum one;
-//	static const Bignum two;
+	static const Bignum zero;
+	static const Bignum one;
+	static const Bignum two;
 	
 	// Conversion operators
 	operator int () const;
@@ -98,12 +95,9 @@ private:
 
 
 // Class Data
-
-const Bignum zero = Bignum(0); //INCLUDERE NELLA DEFINIZIONE "identity.h" ???
-
-//const Bignum Bignum::one  = Bignum(1); //INCLUDERE NELLA DEFINIZIONE "identity.h" ???
-
-//const Bignum Bignum::two  = Bignum(2);
+const Bignum Bignum::zero = Bignum(0); //INCLUDERE NELLA DEFINIZIONE "identity.h" ???
+const Bignum Bignum::one  = Bignum(1); //INCLUDERE NELLA DEFINIZIONE "identity.h" ???
+const Bignum Bignum::two  = Bignum(2);
 
 
 
@@ -154,8 +148,33 @@ Bignum::Bignum(const Bignum& n)
 //}
 
 
-Bignum::~Bignum()
-{} //il menagement del vector<> dovrebbe essere automatico...
+//Bignum::Bignum(const char* number)
+//{
+//	string value(number);
+//	if(value[0]=='-'){
+//		sign = -1;
+//		value = value.substr(1,value.size()-1);
+//	}
+//	else sign = 1;
+//
+//	value = removeFrontZeros(value);
+//	check(value,number);
+//	integer = str_to_chunk(value,8);
+//}
+//
+//Bignum::Bignum(string value)
+//{
+//	string original_form = value;
+//	if(value[0]=='-'){
+//		sign = -1;
+//		value = value.substr(1,value.size()-1);
+//	}
+//	else sign = 1;
+//
+//	value = removeFrontZeros(value);
+//	check(value,original_form);
+//	integer = str_to_chunk(value,8);
+//}
 
 
 
@@ -186,12 +205,17 @@ const Bignum & Bignum::operator = (const Bignum &rhs)
 }
 
 
-//bool operator == (const Bignum & x,const Bignum & y)
-//{ return ((x.negativo == y.negativo) && (x.data == y.data)); }
+bool operator == (const Bignum & x,const Bignum & y)
+{
+	if(x.data.size() != y.data.size()) return false; //devono avere lo stesso numero di chunks
+	for(int i=0;i<x.data.size();i++) if(x.data[i] != y.data[i]) return false; //i chunks devono avere lo stesso valore
+	if(x.negativo != y.negativo) return false; //devono avere lo stesso segno
+	return true;
+}
 
 
-//bool operator != (const Bignum & x,const Bignum & y)  
-//{ return !(x == y); }
+bool operator != (const Bignum & x,const Bignum & y)  
+{ return !(x == y); }
 
 
 //bool operator < (const Bignum & x,const Bignum & y)
@@ -199,10 +223,10 @@ const Bignum & Bignum::operator = (const Bignum &rhs)
 //	//controlla i segni relativi
 //	if     (x.negativo < y.negativo) return false;
 //	else if(x.negativo > y.negativo) return true;
-//	// exclusive or (^) to determine sign
-//	if     (x.value.length() < y.value.length()) return (1^x.negativo);
-//	else if(x.value.length() > y.value.length()) return (0^x.negativo);
-//	return (x.value < y.value && !x.negativo) || (x.value > y.value && x.negativo);
+//	//controlla il numero di chunks
+//	if     (x.data.size() < y.data.size()) return (1^x.negativo);
+//	else if(x.data.size() > y.data.size()) return (0^x.negativo);
+//	return ((x.value < y.value && !x.negativo) || (x.value > y.value && x.negativo);
 //}
 
 
@@ -223,14 +247,12 @@ const Bignum & Bignum::operator = (const Bignum &rhs)
 
 
 // Unary - operator
-//Bignum Bignum::operator -() const
-//{
-//    Bignum temp(*this);
-//    if(temp != zero) temp.negativo = !negativo;
-//    return temp;
-////    if(*this != zero) negativo = !negativo;
-////    return *this;
-//}
+Bignum Bignum::operator -() const
+{
+    Bignum temp(*this);
+    if(temp != zero) temp.negativo = !negativo;
+    return temp;
+}
 
 
 
@@ -265,8 +287,8 @@ Bignum operator + (const Bignum & x, const Bignum & y)
 		digitsum = d1 + d2 + carry; //somma le cifre
 //		std::cout << "Step1:  " << d1 << " " << d2 << "  " << digitsum << " " << carry << std::endl;
 //		if(digitsum < pow(10,x.Ncifre)) carry = 0; else carry = digitsum / (ulong64)pow(10,x.Ncifre); //imposta il riporto, se cè
-			carry = digitsum / (ulong64)pow(10,x.Ncifre); //imposta il riporto, se cè
-		digitsum -= pow(10,x.Ncifre) * carry; //se c'è il riporto ovviamente lo detrae dalla cifra
+			carry = digitsum / (ulong64)pow(10,x.chunkSize); //imposta il riporto, se cè
+		digitsum -= pow(10,x.chunkSize) * carry; //se c'è il riporto ovviamente lo detrae dalla cifra
 		temp.push_back(digitsum); //aggiunge la cifra trovata a temp
 //		std::cout << "Step2:  " << d1 << " " << d2 << "  " << digitsum << " " << carry << std::endl;
 	}
@@ -529,7 +551,7 @@ Bignum operator + (const Bignum & x, const Bignum & y)
 
 
 
-// ################ FUNZIONI FRIEND ################
+// FUNZIONI FRIEND ===================================================================================================
 
 // abs(Bignum)
 Bignum abs(const Bignum & x)
@@ -562,10 +584,17 @@ std::ostream& operator << (std::ostream& os, const Bignum& n)
 	for(int i=n.data.size()-1;i>=0;i--){
 		//aggiunge il valore n-esimo MIGLIORARE USANDO GLI ITERATOR
 		if(i == n.data.size()-1) os << n.data[i]; //è l'ultimo chunk
-		else os << std::setfill('0') << std::setw(n.Ncifre) << n.data[i];
+		else os << std::setfill('0') << std::setw(n.chunkSize) << n.data[i];
 	}
 	return os; //ritorna lo stream
 }
+
+//ostream& operator<<(ostream &out, const bint& value)
+//{
+//    string outputstring = value.string_form();
+//    out << outputstring;
+//    return out;
+//}
 
 
 
@@ -576,6 +605,20 @@ std::ostream& operator << (std::ostream& os, const Bignum& n)
 //   s >> temp;
 //   v = Bignum(temp);
 //   return s;
+//}
+
+//istream& operator>>(istream &in, bint &value) {
+//    string input;
+//	in >> input;
+//    check(input,input);
+//    if(input[0]=='-'){
+//		value.set_sign(-1);
+//		input[0] = '0';
+//	}
+//	else
+//		value.set_sign(1);
+//    value.set_bint_field(str_part_by(8,input));
+//	return in;
 //}
 
 
@@ -684,3 +727,101 @@ std::ostream& operator << (std::ostream& os, const Bignum& n)
 //	
 //	return qq;
 //}
+
+// FUNZIONI AUSILIARIE ===================================================================================================
+
+vector<ulong64> get_chunk_subset(const vector<ulong64>& set, size_t istart, size_t iend)
+{
+	vector<ulong64> newset;
+	newset.reserve(iend-istart+1);
+	newset.insert(newset.end(),set.begin()+istart,set.begin()+iend+1);
+	return newset;
+}
+
+vector<ulong64> join_chunks(const vector<ulong64>& left, const vector<ulong64>& right)
+{
+	vector<ulong64> joinedfield;
+	joinedfield.reserve(left.size() + right.size());
+	joinedfield.insert(joinedfield.end(), left.begin(), left.end());
+	joinedfield.insert(joinedfield.end(), right.begin(), right.end());
+	return joinedfield;
+}
+
+
+/// @return a std::string with no sequential zeroes in the front
+std::string removeFrontZeros(const std::string& str)
+{
+	size_t str_len = str.size();
+	size_t zero_indecies = 0;
+	
+	for(size_t i=0; i<str_len-1; ++i){
+		if(str[i]!='0') break;
+		++zero_indecies;
+    }
+	
+	return str.substr(zero_indecies,str_len-zero_indecies);
+}
+
+/// @return a std::string number representation of the array
+std::string chunk_to_str(const std::vector<ulong64>& arr_chunks,const unsigned int chunkSize)
+{
+	size_t n = arr_chunks.size();
+	std::string carried_answer="", current_index;
+	
+	for(size_t i=0ll;i<n;++i){
+		current_index = std::to_string(arr_chunks[i]);
+		std::string front_zeros(chunkSize-current_index.size(),'0');
+        carried_answer += (front_zeros + current_index);
+    }
+
+    return removeFrontZeros(carried_answer);
+}
+
+vector<ulong64> str_to_chunk(const string& number, ulong64 length)
+{
+	vector<string> str_partition;
+	vector<ulong64> long_partition;
+	
+	string str_temp(length,'0');
+	size_t num_size = number.size();
+	
+	long long int memreserve = ((long long int)num_size/(long long int)length)+1;
+	str_partition.reserve(memreserve);
+	long_partition.reserve(memreserve);
+	
+	for(size_t i=0, str_i; i<num_size;++i){
+		if(i==0 or i%length==0){
+			str_i = length;
+			str_partition.push_back(str_temp);
+		}
+		str_partition.back()[str_i-1] = number[num_size-1-i];
+		--str_i;
+	}
+	
+	size_t str_size = str_partition.size();
+	for(size_t i=0; i<str_size; ++i) long_partition.push_back(stoll(str_partition[str_size-1-i]));
+	
+	return long_partition;
+}
+
+void check(const string& value, const string original_form)
+{
+	try
+	{
+		size_t value_size = value.size(); 
+		if(value_size<=0) throw value_size;
+		for(size_t i=0; i<value_size; ++i) if(value[i]<'0'^value[i]>'9') throw value;
+	}
+	catch(size_t NO_VALUE_ERROR)
+	{
+		cerr<<"\n\x1B[31mbint ERROR\033[0m [check] : NUMBER HAS NO VALUE\n";
+		exit(1);
+	}
+	catch(string VALUE_ERROR)
+	{
+		if(VALUE_ERROR[0]=='-') cerr<<"\n\x1B[31mbint ERROR\033[0m [check] : YOU ASSIGNED AN INVALID BIG \"INTEGER\" NUMBER : (-"<<original_form<<")\n"; // error for double negative signs
+		cerr<<"\n\x1B[31mbint ERROR\033[0m [check] : YOU ASSIGNED AN INVALID BIG \"INTEGER\" NUMBER : ("<<original_form<<")\n";
+		exit(2);
+	}
+}
+
