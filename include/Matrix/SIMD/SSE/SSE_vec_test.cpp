@@ -6,7 +6,8 @@
 #include <iostream>
 
 #include "vec128f.h" // 128-bit packed 32-bit float numbers class
-
+#include "vec128d.h" // 128-bit packed 64-bit double numbers class
+//ATTENZIONE! RIDEFINIIZONE DI NBITS E NVARS PER I VETTORI DI DIFFERENTI VARIABILI!!!!
 
 
 using namespace std;
@@ -30,6 +31,25 @@ int main()
 	cout << "truncate(c) = " << truncate(c) << endl;
 	cout << "floor(c)    = " << floor(c)    << endl;
 	cout << "ceil(c)     = " << ceil(c)     << endl;
+	
+	
+	
+	vec128d A(2.0);
+	vec128d B(-12.5, 7.9);
+	
+	cout << "A    = " << A << endl;
+	cout << "B    = " << B << endl;
+	cout << "B[1] = " << B[1] << endl;
+	cout << "A+B  = " << A+B << endl;
+	cout << "A-B  = " << A-B << endl;
+	cout << "A*B  = " << A*B << endl;
+	cout << "A/B  = " << A/B << endl;
+	
+	cout << "round(B)    = " << round(B)    << endl;
+	cout << "truncate(B) = " << truncate(B) << endl;
+	cout << "floor(B)    = " << floor(B)    << endl;
+	cout << "ceil(B)     = " << ceil(B)     << endl;
+	
 	
 	return 0;
 }

@@ -15,7 +15,8 @@ class vec128f
 		vec128f(__m128 const& x) { v = x; }
 		
 		inline void insert(int index, float value) { v[index]=value; }
-		inline float operator [] (int index) const { return v[index]; }
+		inline const float operator [] (const int& index) const { return v[index]; } //getter
+		inline float& operator [] (const int& index) { return v[index]; } //setter
 };
 
 
