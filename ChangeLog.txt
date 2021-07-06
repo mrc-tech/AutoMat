@@ -4,6 +4,7 @@
 
 06/07/2021:
 - aggiunti i prototipi dei wrappers per le operazioni SIMD sui vettori di float (AVX instruction set)
+- Bignum_fast: aggiunte alcune funzioni ausiliarie secondarie
 
 04/07/2021:
 - Bignum: aggiunte le operazioni di conversione (casting)
