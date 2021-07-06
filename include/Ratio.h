@@ -112,7 +112,7 @@ template<typename T> void Ratio<T>::normalize()
 
 // FUNZIONI AUSILIARIE ==================================================================================================
 
-
+// METTERE LA FUNZIONE IN UNA LIBRERIA CON LE FUNZIONI GENERALI PER TUTTE LE CLASSI??
 template<typename T> T gcd(T a, T b)
 {
 	while(b > zero(T())){
