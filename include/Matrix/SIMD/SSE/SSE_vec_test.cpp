@@ -4,15 +4,32 @@
 
 #include <immintrin.h>
 #include <iostream>
-//#include <chrono>
 
-#include "vec128i.h" // 128-bit packed 16-bit short integer numbers class
+#include "vec128f.h" // 128-bit packed 32-bit float numbers class
+
+
 
 using namespace std;
 
 int main()
 {
+	vec128f a;
+	vec128f b(2.0f);
+	vec128f c(1.4f, 3.3f, -12.5f, 7.9f);
 	
+	cout << "a    = " << a << endl;
+	cout << "b    = " << b << endl;
+	cout << "c    = " << c << endl;
+	cout << "c[1] = " << c[1] << endl;
+	cout << "b+c  = " << b+c << endl;
+	cout << "b-c  = " << b-c << endl;
+	cout << "b*c  = " << b*c << endl;
+	cout << "b/c  = " << b/c << endl;
+	
+	cout << "round(c)    = " << round(c)    << endl;
+	cout << "truncate(c) = " << truncate(c) << endl;
+	cout << "floor(c)    = " << floor(c)    << endl;
+	cout << "ceil(c)     = " << ceil(c)     << endl;
 	
 	return 0;
 }
