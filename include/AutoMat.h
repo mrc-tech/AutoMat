@@ -19,6 +19,8 @@
 */
 
 
+#define AUTOMAT_VERSION "0.0.1" // DA MIGLIORARE LA DEFINIZIONE INTERNA DELLA VERSIONE (vedere esempi autorevoli al riguardo)
+
 
 #include "Bignum.h" // library for big integers
 
