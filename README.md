@@ -3,7 +3,7 @@ Simple _Computer Algebra System_ C++ library for learning purposes.
 
 
 ## Design objectives
- - All classes and functions in header files (no precompiled library)
+ - All classes and functions in header files (no precompiled library and no external dependencies)
  - The code can be understanded easly
  - C++11 standard
  - Works on Windows and Linux
