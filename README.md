@@ -14,3 +14,12 @@ Simple _Computer Algebra System_ C++ library for learning purposes.
  - Rational numbers (`Ratio<>`) [_da completare_]
  - Matrix manipulations (`Matrix<>`) [_da completare e migliorare_]
 
+
+## Examples
+
+### `feature 1`
+
+### `feature 2`
+
+### `etcoetera...`
+
